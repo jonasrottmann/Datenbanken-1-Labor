@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Properties;
 
 /**
@@ -75,7 +76,6 @@ public class SQLConnector {
 	 *             Wird im Falle eines gescheiterten Verbindungsaufbaus geworfen
 	 */
 	protected SQLConnector() throws SQLException {
-
 		try {
 			loginData = new LoginData();
 		} catch (Exception e) {
@@ -83,7 +83,9 @@ public class SQLConnector {
 		}
 
 		// Get URL from LoginData
-		String url = loginData.getDatabaseURL();
+		String url ="";
+		url = loginData.getDatabaseURL();
+		
 
 		// Login Data:
 		Properties props = new Properties();
@@ -94,7 +96,7 @@ public class SQLConnector {
 		connection = DriverManager.getConnection(url, props);
 		
 		//Initialisiert die Nutzerobjekte.
-		//TODO
+		clients = new ArrayList<SQLConnectorClient>();
 	}
 
 	/**
@@ -117,6 +119,12 @@ public class SQLConnector {
 	 *             bereits geschlossen ist
 	 */
 	public void close() throws SQLException {
+		//TODO Ruft alle Nutzerobjekte zurück (Callback) und schließt dann die Datenbankverbindung.
+		
+		for( SQLConnectorClient k: clients ) {
+			k.close();
+		}
+		
 		connection.close();
 	}
 
@@ -132,7 +140,7 @@ public class SQLConnector {
 	 * @return Die Connection Instanz
 	 */
 	protected Connection getConnection(SQLConnectorClient client) {
-
+		clients.add(client);
 		return connection;
 	}
 

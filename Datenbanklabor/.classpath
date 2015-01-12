@@ -2,7 +2,7 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
-	<classpathentry kind="lib" path="/Users/jonas/Documents/eclipse_workspace/Datenbanklabor/Treiber/oracle-ojdbc6.jar"/>
-	<classpathentry kind="lib" path="/Users/jonas/Documents/eclipse_workspace/Datenbanklabor/Treiber/postgresql-8.4-702.jdbc4.jar"/>
+	<classpathentry kind="lib" path="/Users/jonas/git/datenbanken-1-labor/Datenbanklabor/Treiber/postgresql-8.4-702.jdbc4.jar"/>
+	<classpathentry kind="lib" path="/Users/jonas/git/datenbanken-1-labor/Datenbanklabor/Treiber/oracle-ojdbc6.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

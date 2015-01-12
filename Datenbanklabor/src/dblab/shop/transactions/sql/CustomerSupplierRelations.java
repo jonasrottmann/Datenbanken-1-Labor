@@ -97,7 +97,6 @@ public class CustomerSupplierRelations implements SQLConnectorClient {
 		
 		String sql = "SELECT kunde.name kunde, kunde.nr, lieferant.name lieferant, lieferant.nr lfnr FROM lieferant JOIN lieferung ON lieferant.nr = lieferung.liefnr JOIN auftragsposten ON lieferung.teilnr = auftragsposten.teilnr JOIN auftrag ON auftragsposten.auftrnr = auftrag.auftrnr FULL OUTER JOIN kunde ON auftrag.kundnr = kunde.nr " + (kdNr == 0 ? "" : "WHERE auftrag.kundnr = '" + kdNr + "'") +  " GROUP BY kunde.name, kunde.nr, lieferant.name, lieferant.nr ORDER BY kunde.name";
 		stmtKundeLieferanten = connection.prepareStatement(sql);
-				
 		
 		ResultSet rs = stmtKundeLieferanten.executeQuery();
 		return rs;

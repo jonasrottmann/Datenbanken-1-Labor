@@ -60,9 +60,9 @@ public class LoginData {
 		this.pass = "dbprax04";
 		
 		//Local
-		this.databaseURL = "jdbc:postgresql://127.0.0.1/bike";
-		this.user = "jonas";
-		this.pass = "";
+//		this.databaseURL = "jdbc:postgresql://127.0.0.1/bike";
+//		this.user = "jonas";
+//		this.pass = "";
 	}
 	
 	/**

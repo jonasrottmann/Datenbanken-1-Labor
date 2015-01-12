@@ -136,7 +136,7 @@ public class SQLUpdateManager implements SQLConnectorClient {
 		
 		//RGB Werte in neue Tabelle eintragen
 		stmt = connection.createStatement();
-		stmt.addBatch("UPDATE farbe SET rot = 1.0, gruen = 1.0, blau = 1.0 WHERE name = 'schwarz';");
+		stmt.addBatch("UPDATE farbe SET rot = 0.7, gruen = 0.3, blau = 0.2 WHERE name = 'schwarz';");
 		stmt.addBatch("UPDATE farbe SET rot = 1.0, gruen = 0.0, blau = 0.0 WHERE name = 'rot';");
 		stmt.addBatch("UPDATE farbe SET rot = 0.0, gruen = 0.0, blau = 1.0 WHERE name = 'blau';");	
 		int[] affectedBatch = stmt.executeBatch();
@@ -150,7 +150,6 @@ public class SQLUpdateManager implements SQLConnectorClient {
 		stmt = connection.createStatement();
 		stmt.executeUpdate("ALTER TABLE teilestamm ADD farbnr INT REFERENCES farbe (nr)");
 		System.out.println("Column 'farbnr' added to table 'teilestamm'");
-		
 		
 		//Die Spalte teilestamm.farbnr mit Werten befüllen
 		stmt = connection.createStatement();
@@ -170,6 +169,7 @@ public class SQLUpdateManager implements SQLConnectorClient {
 		System.out.println("Column 'farbe' removed from 'teilestamm'");
 
 		connection.commit();
+		stmt.close();
 	    close();
 	}
 
@@ -189,8 +189,6 @@ public class SQLUpdateManager implements SQLConnectorClient {
 	 *             Bei jedem SQL Fehler
 	 */
 	public static void main(String[] args) throws SQLException, UpdateFailedException {
-
-
 		SQLConnector bikedb = new SQLConnector();
 		new SQLUpdateManager(bikedb);
 	}
