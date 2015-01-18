@@ -126,7 +126,7 @@ public class SQLUpdateManager implements SQLConnectorClient {
 		
 		//Neue Tabelle anlegen
 		Statement stmt = connection.createStatement();
-		stmt.executeUpdate("CREATE TABLE farbe(nr serial, name character(10) UNIQUE NOT NULL, rot REAL CHECK(rot >= 0.0 AND rot <= 1.0) DEFAULT 0, gruen REAL CHECK(gruen >= 0.0 AND rot <= 1.0) DEFAULT 0, blau REAL CHECK(blau >= 0.0 AND rot <= 1.0) DEFAULT 0, PRIMARY KEY (nr))");
+		stmt.executeUpdate("CREATE TABLE farbe(nr INT, name character(10) UNIQUE NOT NULL, rot REAL CHECK(rot >= 0.0 AND rot <= 1.0) DEFAULT 0, gruen REAL CHECK(gruen >= 0.0 AND rot <= 1.0) DEFAULT 0, blau REAL CHECK(blau >= 0.0 AND rot <= 1.0) DEFAULT 0, PRIMARY KEY (nr))");
 		System.out.println("Table 'farbe' created");
 		
 		//Farben in neue Tabelle kopieren
