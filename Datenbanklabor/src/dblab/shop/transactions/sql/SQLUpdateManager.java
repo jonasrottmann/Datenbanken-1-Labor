@@ -126,11 +126,24 @@ public class SQLUpdateManager implements SQLConnectorClient {
 		
 		//Neue Tabelle anlegen
 		Statement stmt = connection.createStatement();
+		stmt.executeUpdate("CREATE SEQUENCE farbe_nr start with 1 increment by 1 nomaxvalue");
+		System.out.println("test");
+		
+//		stmt = connection.createStatement();
+//		stmt.executeUpdate("CREATE TRIGGER farbe_trigger before insert on farbe for each row begin select farbe_nr.nextval into : farbe.nr from dual");
+//		System.out.println("test2");
+		
+		
+		stmt = connection.createStatement();
 		stmt.executeUpdate("CREATE TABLE farbe(nr INT, name character(10) UNIQUE NOT NULL, rot REAL CHECK(rot >= 0.0 AND rot <= 1.0) DEFAULT 0, gruen REAL CHECK(gruen >= 0.0 AND rot <= 1.0) DEFAULT 0, blau REAL CHECK(blau >= 0.0 AND rot <= 1.0) DEFAULT 0, PRIMARY KEY (nr))");
 		System.out.println("Table 'farbe' created");
 		
+		
 		//Farben in neue Tabelle kopieren
 		stmt = connection.createStatement();
+		
+		stmt.executeUpdate("INSERT INTO farbe nr(farbe_nr.nextval)");
+		
 		int affected = stmt.executeUpdate("INSERT INTO farbe (name) SELECT farbe FROM teilestamm WHERE farbe IS NOT NULL GROUP BY farbe ORDER BY farbe");
 		System.out.println(affected + " rows added to 'farbe'");
 		
