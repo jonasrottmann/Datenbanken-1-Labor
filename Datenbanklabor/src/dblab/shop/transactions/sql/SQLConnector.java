@@ -118,9 +118,7 @@ public class SQLConnector {
 	 *             Im Falle eines Zugriffsfehlers oder wenn die Verbindung
 	 *             bereits geschlossen ist
 	 */
-	public void close() throws SQLException {
-		//TODO Ruft alle Nutzerobjekte zurück (Callback) und schließt dann die Datenbankverbindung.
-		
+	public void close() throws SQLException {		
 		for( SQLConnectorClient k: clients ) {
 			k.close();
 		}

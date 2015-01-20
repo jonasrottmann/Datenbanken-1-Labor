@@ -56,13 +56,8 @@ public class LoginData {
 		
 		//Server
 		this.databaseURL = "jdbc:oracle:thin:@iwi-lkit-db-01:1521:lab1";
-		this.user = "dbprax04";
-		this.pass = "dbprax04";
-		
-		//Local
-//		this.databaseURL = "jdbc:postgresql://127.0.0.1/bike";
-//		this.user = "jonas";
-//		this.pass = "";
+		this.user = "dbprax60";
+		this.pass = "dbprax60";
 	}
 	
 	/**

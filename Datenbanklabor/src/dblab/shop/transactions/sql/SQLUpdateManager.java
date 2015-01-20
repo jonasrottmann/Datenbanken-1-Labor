@@ -3,6 +3,7 @@
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -126,59 +127,55 @@ public class SQLUpdateManager implements SQLConnectorClient {
 		
 		//Neue Tabelle anlegen
 		Statement stmt = connection.createStatement();
-		stmt.executeUpdate("CREATE SEQUENCE farbe_nr start with 1 increment by 1 nomaxvalue");
-		System.out.println("test");
-		
-//		stmt = connection.createStatement();
-//		stmt.executeUpdate("CREATE TRIGGER farbe_trigger before insert on farbe for each row begin select farbe_nr.nextval into : farbe.nr from dual");
-//		System.out.println("test2");
-		
-		
-		stmt = connection.createStatement();
-		stmt.executeUpdate("CREATE TABLE farbe(nr INT, name character(10) UNIQUE NOT NULL, rot REAL CHECK(rot >= 0.0 AND rot <= 1.0) DEFAULT 0, gruen REAL CHECK(gruen >= 0.0 AND rot <= 1.0) DEFAULT 0, blau REAL CHECK(blau >= 0.0 AND rot <= 1.0) DEFAULT 0, PRIMARY KEY (nr))");
+		try {
+			stmt.executeUpdate("DROP TABLE farbe");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		stmt.executeUpdate("CREATE TABLE farbe(nr INT PRIMARY KEY, name VARCHAR(32) UNIQUE NOT NULL,"
+				+ "rot FLOAT DEFAULT 0.0 CHECK(rot >= 0.0 AND rot <= 1.0), gruen FLOAT DEFAULT 0.0 CHECK(gruen >= 0.0 AND gruen <= 1.0),"
+				+ "blau FLOAT DEFAULT 0.0 CHECK(blau >= 0.0 AND blau <= 1.0))");
 		System.out.println("Table 'farbe' created");
 		
-		
 		//Farben in neue Tabelle kopieren
-		stmt = connection.createStatement();
-		
-		stmt.executeUpdate("INSERT INTO farbe nr(farbe_nr.nextval)");
-		
-		int affected = stmt.executeUpdate("INSERT INTO farbe (name) SELECT farbe FROM teilestamm WHERE farbe IS NOT NULL GROUP BY farbe ORDER BY farbe");
-		System.out.println(affected + " rows added to 'farbe'");
+		ResultSet rs = stmt.executeQuery("SELECT farbe FROM teilestamm WHERE farbe IS NOT NULL GROUP BY farbe ORDER BY farbe ASC");
+		int i = 1;
+		stmt.clearBatch();
+		while (rs.next()) {
+			stmt.addBatch("INSERT INTO farbe (nr, name) VALUES (" + (i++) + ", '" + rs.getString(1).trim() + "')");
+		}
+		stmt.executeBatch();
+		rs.close();
+		System.out.println(i - 1   + " rows added to 'farbe'");
 		
 		//RGB Werte in neue Tabelle eintragen
-		stmt = connection.createStatement();
-		stmt.addBatch("UPDATE farbe SET rot = 0.7, gruen = 0.3, blau = 0.2 WHERE name = 'schwarz';");
-		stmt.addBatch("UPDATE farbe SET rot = 1.0, gruen = 0.0, blau = 0.0 WHERE name = 'rot';");
-		stmt.addBatch("UPDATE farbe SET rot = 0.0, gruen = 0.0, blau = 1.0 WHERE name = 'blau';");	
+		stmt.clearBatch();
+		stmt.addBatch("UPDATE farbe SET rot = 0.0, gruen = 0.0, blau = 0.0 WHERE name = 'schwarz'");
+		stmt.addBatch("UPDATE farbe SET rot = 1.0, gruen = 0.0, blau = 0.0 WHERE name = 'rot'");
+		stmt.addBatch("UPDATE farbe SET rot = 0.0, gruen = 0.0, blau = 1.0 WHERE name = 'blau'");	
 		int[] affectedBatch = stmt.executeBatch();
 		int sum = 0;
-		for (int i=0; i < affectedBatch.length; i++){
+		for (i = 0; i < affectedBatch.length; i++){
 		    sum += affectedBatch[i];
 		  }
-		System.out.println("Updated " + sum + "rows.");
+		System.out.println("Updated " + sum + " rows.");
+		
 		
 		//In teilestamm die spalate teilnr als FK anlegen
 		stmt = connection.createStatement();
 		stmt.executeUpdate("ALTER TABLE teilestamm ADD farbnr INT REFERENCES farbe (nr)");
 		System.out.println("Column 'farbnr' added to table 'teilestamm'");
 		
+		
 		//Die Spalte teilestamm.farbnr mit Werten befüllen
-		stmt = connection.createStatement();
-		stmt.addBatch("UPDATE teilestamm SET farbnr=1 WHERE farbe = 'blau';");
-		stmt.addBatch("UPDATE teilestamm SET farbnr=2 WHERE farbe = 'rot';");
-		stmt.addBatch("UPDATE teilestamm SET farbnr=3 WHERE farbe = 'schwarz';");
-		affectedBatch = stmt.executeBatch();
-		sum = 0;
-		for (int i=0; i < affectedBatch.length; i++){
-		    sum += affectedBatch[i];
-		  }
-		System.out.println("Set 'teilestamm.farbnr' in " + sum + "rows.");
+		stmt.clearBatch();
+		sum = stmt.executeUpdate("UPDATE teilestamm SET teilestamm.farbnr = (SELECT farbnr FROM farbe WHERE teilestamm.farbe = farbe.name)"
+				+ "WHERE teilestamm.farbe IS NOT NULL");
+		System.out.println("Set 'teilestamm.farbnr' in " + sum + " rows.");
 		
 		//Die Spalte teilestamm.farbe entfernen
 		stmt = connection.createStatement();
-		stmt.executeUpdate("ALTER TABLE teilestamm DROP COLUMN farbe;");
+		stmt.executeUpdate("ALTER TABLE teilestamm DROP COLUMN farbe");
 		System.out.println("Column 'farbe' removed from 'teilestamm'");
 
 		connection.commit();
